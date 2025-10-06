@@ -2,19 +2,25 @@ package org.coiffet.tp1;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Article {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long article_id;
+    private int article_id;
 
     @Column(name = "contenu")
     private String contenu;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     private User author;
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Opinion> opinions;
+
 
     public Article() {
     }
