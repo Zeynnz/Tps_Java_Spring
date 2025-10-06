@@ -8,7 +8,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long user_id;
 
     @Column(name = "name")
     private String name;
@@ -25,7 +25,7 @@ public class User {
     }
 
     public long getId() {
-        return id;
+        return user_id;
     }
 
 

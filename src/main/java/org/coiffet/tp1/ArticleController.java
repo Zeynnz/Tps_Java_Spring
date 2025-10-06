@@ -11,11 +11,22 @@ public class ArticleController {
     @Autowired
     private ArticleRep articleRep;
 
+    @Autowired
+    private UserRep userRep;
+
     @PostMapping(path="/add")
     public @ResponseBody String addArticle(@RequestParam String contenu, @RequestParam String author) {
+
+        // Utilisateur correspondant
+        User user = userRep.findByName(author);
+
+        if (user == null) {
+            return "Erreur : utilisateur " + author + " introuvable";
+        }
+
         Article article = new Article();
         article.setContenu(contenu);
-        article.setAuthor(author);
+        article.setAuthor(user);
         articleRep.save(article);
         return "Saved";
     }

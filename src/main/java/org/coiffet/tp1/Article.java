@@ -2,32 +2,28 @@ package org.coiffet.tp1;
 
 import jakarta.persistence.*;
 
-
 @Entity
 public class Article {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long article_id;
 
     @Column(name = "contenu")
     private String contenu;
 
-    private String author;
-
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "user_id")
+    private User author;
 
     public Article() {
-
     }
 
-    public String getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
@@ -40,8 +36,6 @@ public class Article {
     }
 
     public long getId() {
-        return id;
+        return article_id;
     }
-
-
 }
