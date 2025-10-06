@@ -1,6 +1,8 @@
-package org.coiffet.tp1;
+package org.coiffet.tp1.User;
 
 import jakarta.persistence.*;
+import org.coiffet.tp1.Article.Article;
+import org.coiffet.tp1.Opinion.Opinion;
 
 import java.util.List;
 

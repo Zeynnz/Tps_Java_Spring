@@ -1,6 +1,8 @@
-package org.coiffet.tp1;
+package org.coiffet.tp1.Opinion;
 
 import jakarta.persistence.*;
+import org.coiffet.tp1.Article.Article;
+import org.coiffet.tp1.User.User;
 
 @Entity
 public class Opinion {

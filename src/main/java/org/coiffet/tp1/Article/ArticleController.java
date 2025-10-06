@@ -1,5 +1,7 @@
-package org.coiffet.tp1;
+package org.coiffet.tp1.Article;
 
+import org.coiffet.tp1.User.User;
+import org.coiffet.tp1.User.UserRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

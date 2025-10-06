@@ -1,4 +1,4 @@
-package org.coiffet.tp1;
+package org.coiffet.tp1.User;
 import org.springframework.data.repository.CrudRepository;
 
 public interface UserRep extends CrudRepository<User, Integer> {

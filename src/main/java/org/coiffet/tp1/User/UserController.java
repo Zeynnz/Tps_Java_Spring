@@ -1,4 +1,4 @@
-package org.coiffet.tp1;
+package org.coiffet.tp1.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
