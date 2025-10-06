@@ -24,10 +24,4 @@ public class UserController {
         return userRep.findAll();
     }
 
-    @DeleteMapping(path="/delete")
-    public @ResponseBody String deleteUser(@RequestParam int id) {
-        userRep.deleteById(id);
-        return "Deleted";
-    }
-
 }
