@@ -46,4 +46,9 @@ public class OpinionController {
     public @ResponseBody Iterable<Opinion> getAllOpinions() {
         return opinionRep.findAll();
     }
+
+    @GetMapping(path="/one")
+    public @ResponseBody Opinion getOpinionById(@RequestParam int id) {
+        return opinionRep.getOpinionById(id);
+    }
 }
