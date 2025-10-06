@@ -36,5 +36,10 @@ public class ArticleController {
         return articleRep.findAll();
     }
 
+    @GetMapping(path="/one")
+    public @ResponseBody Article getArticleById(@RequestParam int id) {
+        return articleRep.getArticlesById(id);
+    }
+
 
 }
