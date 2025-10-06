@@ -43,5 +43,23 @@ public class ArticleController {
         return articleRep.getArticlesById(id);
     }
 
+    @PatchMapping
+    public @ResponseBody String updateArticle(@RequestParam int id, @RequestParam String contenu, @RequestParam String author) {
+        Article article = articleRep.getArticlesById(id);
+        User user = userRep.findByName(author);
+
+        if (user == null) {
+            return "Erreur : utilisateur " + author + " introuvable";
+        }
+        if (contenu != null) {
+            article.setContenu(contenu);
+        }
+        if(author != null && !author.equals(article.getAuthor().getName())) {
+            article.setAuthor(user);
+        }
+        articleRep.save(article);
+        return "Updated";
+    }
+
 
 }
