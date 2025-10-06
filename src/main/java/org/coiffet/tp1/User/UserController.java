@@ -30,4 +30,15 @@ public class UserController {
         return userRep.getUsersById(id);
     }
 
+    @PatchMapping(path="/update")
+    public @ResponseBody String updateUser(@RequestParam String name, @RequestParam String newName) {
+        User user = userRep.getUsersByName(name);
+
+        if( newName != null && !newName.equals(user.getName())) {
+            user.setName(name);
+        }
+        userRep.save(user);
+        return "Updated";
+    }
+
 }

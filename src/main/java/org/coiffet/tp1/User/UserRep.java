@@ -8,4 +8,6 @@ public interface UserRep extends CrudRepository<User, Integer> {
 
 
     User getUsersById(long id);
+
+    User getUsersByName(String name);
 }

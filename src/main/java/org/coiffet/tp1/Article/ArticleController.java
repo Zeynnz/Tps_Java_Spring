@@ -43,7 +43,7 @@ public class ArticleController {
         return articleRep.getArticlesById(id);
     }
 
-    @PatchMapping
+    @PatchMapping(path="/update")
     public @ResponseBody String updateArticle(@RequestParam int id, @RequestParam String contenu, @RequestParam String author) {
         Article article = articleRep.getArticlesById(id);
         User user = userRep.findByName(author);
