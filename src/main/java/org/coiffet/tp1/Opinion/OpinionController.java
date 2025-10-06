@@ -51,4 +51,20 @@ public class OpinionController {
     public @ResponseBody Opinion getOpinionById(@RequestParam int id) {
         return opinionRep.getOpinionById(id);
     }
+
+    @PatchMapping(path="/update")
+    public @ResponseBody String updateOpinion(@RequestParam int id, @RequestParam String contenu,User user, Article article) {
+        Opinion opinion = opinionRep.getOpinionById(id);
+        if (user.getId() != opinion.getUser().getId()) {
+            opinion.setUser(user);
+        }
+        if (article.getId() != opinion.getArticle().getId()) {
+            opinion.setArticle(article);
+        }
+        if (contenu != null && !contenu.isEmpty()) {
+            opinion.setMessage(contenu);
+        }
+        opinionRep.save(opinion);
+        return "Updated";
+    }
 }

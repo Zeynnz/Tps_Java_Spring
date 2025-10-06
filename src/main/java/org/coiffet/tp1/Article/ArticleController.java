@@ -44,7 +44,7 @@ public class ArticleController {
     }
 
     @PatchMapping(path="/update")
-    public @ResponseBody String updateArticle(@RequestParam int id, @RequestParam String contenu, @RequestParam String author) {
+    public @ResponseBody String updateArticle(@RequestParam int id, String contenu, String author) {
         Article article = articleRep.getArticlesById(id);
         User user = userRep.findByName(author);
 
