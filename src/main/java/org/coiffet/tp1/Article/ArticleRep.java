@@ -5,4 +5,6 @@ public interface ArticleRep extends CrudRepository<Article, Integer> {
 
 
     Article getArticlesById(long id);
+
+    Iterable<Article> getArticlesByAuthour(String authour);
 }

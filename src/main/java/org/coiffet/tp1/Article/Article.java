@@ -43,6 +43,14 @@ public class Article {
         this.contenu = contenu;
     }
 
+    public List<Opinion> getOpinions() {
+        return opinions;
+    }
+
+    public void setOpinions(List<Opinion> opinions) {
+        this.opinions = opinions;
+    }
+
     public long getId() {
         return article_id;
     }
