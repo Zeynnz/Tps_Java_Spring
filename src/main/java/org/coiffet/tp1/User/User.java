@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.coiffet.tp1.Article.Article;
 import org.coiffet.tp1.Opinion.Opinion;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -37,6 +38,27 @@ public class User {
 
     public long getId() {
         return user_id;
+    }
+
+    public List<Opinion> getOpinions() {
+        return opinions;
+    }
+
+    public void setOpinions(List<Opinion> opinions) {
+        this.opinions = opinions;
+    }
+
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+    public void setArticles(List<Article> articles) {
+        this.articles = articles;
+    }
+
+    // supprimer un article spécifique dans la lsite des articles
+    public void deleteArticleby(Article article) {
+        articles.remove(article);
     }
 
 
