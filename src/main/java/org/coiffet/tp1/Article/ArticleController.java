@@ -50,8 +50,8 @@ public class ArticleController {
     }
 
     @GetMapping(path="/byAuthor")
-    public @ResponseBody Iterable<Article> getArticlesByAuthor(@RequestParam String authorName) {
-        return articleRep.getArticlesByAuthour(authorName);
+    public @ResponseBody Iterable<Article> getArticlesByAuthor(@RequestParam User author) {
+        return articleRep.getArticlesByAuthor(author);
     }
 
     @PatchMapping(path="/update")
