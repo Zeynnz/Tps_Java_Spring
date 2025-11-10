@@ -25,6 +25,19 @@ public class User {
     private List<Article> articles;
 
 
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public User() {
     }
 

@@ -1,13 +1,16 @@
 package org.coiffet.tp1.Article;
 
 import org.coiffet.tp1.Opinion.OpinionRep;
+import org.coiffet.tp1.Opinion.OpinionType;
 import org.coiffet.tp1.User.User;
 import org.coiffet.tp1.User.UserRep;
+import org.coiffet.tp1.User.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping(path="/articles")
 public class ArticleController {
 
@@ -20,72 +23,135 @@ public class ArticleController {
     @Autowired
     private OpinionRep opinionRep;
 
-    @PostMapping(path="/add")
-    public @ResponseBody String addArticle(@RequestParam String contenu, @RequestParam String author) {
-
-        // Utilisateur correspondant
-        User user = userRep.findByName(author);
-
-        if (user == null) {
-            return "Erreur : utilisateur " + author + " introuvable";
+    public record ArticlePublicDTO(String auteur, String contenu) {
+        public ArticlePublicDTO(Article article) {
+            this(article.getAuthor().getName(), article.getContenu());
         }
+    }
+
+    public record ArticleModeratorDTO(
+            String auteur, String contenu, List<String> usersLiked,
+            long totalLikes, List<String> usersDisliked, long totalDislikes
+    ) {
+        public ArticleModeratorDTO(Article article) {
+            this(
+                    article.getAuthor().getName(),
+                    article.getContenu(),
+                    article.getOpinions().stream()
+                            .filter(o -> o.getType() == OpinionType.LIKE)
+                            .map(o -> o.getUser().getName())
+                            .toList(),
+                    article.getOpinions().stream()
+                            .filter(o -> o.getType() == OpinionType.LIKE)
+                            .count(),
+                    article.getOpinions().stream()
+                            .filter(o -> o.getType() == OpinionType.DISLIKE)
+                            .map(o -> o.getUser().getName())
+                            .toList(),
+                    article.getOpinions().stream()
+                            .filter(o -> o.getType() == OpinionType.DISLIKE)
+                            .count()
+            );
+        }
+
+    }
+
+    @PostMapping(path="/add")
+    public String addArticle(@RequestParam String contenu, @RequestParam String username) {
+        User user = userRep.findByName(username);
+        if(user == null) return "Utilisateur introuvable";
+        if(user.getRole() != Role.PUBLISHER) return "Permission refusée : seul un publisher peut ajouter un article";
 
         Article article = new Article();
         article.setContenu(contenu);
         article.setAuthor(user);
         articleRep.save(article);
-        return "Saved";
+        return "Article ajouté avec succès";
     }
 
-    //La publication, la consultation, la modification et la suppression des articles de blogs. Un article est caractérisé, a minima, par sa date de publication, son auteur et son contenu
-
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<Article> getAllArticles() {
-        return articleRep.findAll();
+    public List<?> getAllArticles(@RequestParam(required = false) String username) {
+        User user = (username != null) ? userRep.findByName(username) : null;
+
+        if(user == null) {
+            return ((List<Article>) articleRep.findAll()).stream()
+                    .map(ArticlePublicDTO::new)
+                    .toList();
+        }
+
+        if(user.getRole() == Role.MODERATOR) {
+            return ((List<Article>) articleRep.findAll()).stream()
+                    .map(ArticleModeratorDTO::new)
+                    .toList();
+        }
+
+        if(user.getRole() == Role.PUBLISHER) {
+            return ((List<Article>) articleRep.findAll()).stream()
+                    .map(article -> {
+                        if(article.getAuthor().getId() == user.getId()) {
+                            return new ArticleModeratorDTO(article); // ses propres articles
+                        } else {
+                            return new ArticlePublicDTO(article); // articles des autres
+                        }
+                    }).toList();
+        }
+
+        return ((List<Article>) articleRep.findAll()).stream()
+                .map(ArticlePublicDTO::new)
+                .toList();
     }
 
     @GetMapping(path="/one")
-    public @ResponseBody Article getArticleById(@RequestParam int id) {
-        return articleRep.getArticlesById(id);
-    }
+    public Object getArticleById(@RequestParam int id, @RequestParam(required = false) String username) {
+        Article article = articleRep.getArticlesById(id);
+        if(article == null) return "Article introuvable";
 
-    @GetMapping(path="/byAuthor")
-    public @ResponseBody Iterable<Article> getArticlesByAuthor(@RequestParam User author) {
-        return articleRep.getArticlesByAuthor(author);
+        User user = (username != null) ? userRep.findByName(username) : null;
+
+        if(user == null) return new ArticlePublicDTO(article);
+
+        if(user.getRole() == Role.MODERATOR) return new ArticleModeratorDTO(article);
+
+        if(user.getRole() == Role.PUBLISHER) {
+            if(article.getAuthor().getId() == user.getId()) return new ArticleModeratorDTO(article);
+            else return new ArticlePublicDTO(article);
+        }
+
+        return new ArticlePublicDTO(article);
     }
 
     @PatchMapping(path="/update")
-    public @ResponseBody String updateArticle(@RequestParam int id, String contenu, String author) {
+    public String updateArticle(@RequestParam int id, @RequestParam String contenu, @RequestParam String username) {
         Article article = articleRep.getArticlesById(id);
-        User user = userRep.findByName(author);
+        if(article == null) return "Article introuvable";
 
-        if (user == null) {
-            return "Erreur : utilisateur " + author + " introuvable";
-        }
-        if (contenu != null) {
-            article.setContenu(contenu);
-        }
-        if(author != null && !author.equals(article.getAuthor().getName())) {
-            article.setAuthor(user);
+        User user = userRep.findByName(username);
+        if(user == null) return "Utilisateur introuvable";
+
+        if(user.getRole() != Role.PUBLISHER || article.getAuthor().getId() != user.getId()) {
+            return "Permission refusée : seul l'auteur publisher peut modifier cet article";
         }
 
+        article.setContenu(contenu);
         articleRep.save(article);
-        return "Updated";
+        return "Article mis à jour";
     }
 
     @DeleteMapping(path="/delete")
-    public @ResponseBody String deleteArticle(@RequestParam int id) {
+    public String deleteArticle(@RequestParam int id, @RequestParam String username) {
         Article article = articleRep.getArticlesById(id);
-        User user = userRep.findByName(article.getAuthor().getName());
+        if(article == null) return "Article introuvable";
 
-        if (user == null) {
-            return "Erreur : utilisateur introuvable, aucun auteur trouvé avec le nom de l'auteur";
+        User user = userRep.findByName(username);
+        if(user == null) return "Utilisateur introuvable";
+
+        if(user.getRole() == Role.MODERATOR || (user.getRole() == Role.PUBLISHER && article.getAuthor().getId() == user.getId())) {
+            opinionRep.deleteByArticle(article);
+            article.getAuthor().deleteArticleby(article);
+            articleRep.delete(article);
+            return "Article supprimé";
+        } else {
+            return "Permission refusée : suppression non autorisée";
         }
-
-        opinionRep.deleteByArticle(article);
-        user.deleteArticleby(article);
-        articleRep.delete(article);
-        return "Deleted";
     }
-
 }

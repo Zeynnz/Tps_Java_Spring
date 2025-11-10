@@ -11,8 +11,9 @@ public class Opinion {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int opinion_id;
 
-    @Column(name = "message", nullable = false)
-    private String message;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private OpinionType type;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
@@ -22,19 +23,18 @@ public class Opinion {
     @JoinColumn(name = "article_id", referencedColumnName = "article_id")
     private Article article;
 
-    public Opinion() {
-    }
+    public Opinion() {}
 
     public int getId() {
         return opinion_id;
     }
 
-    public String getMessage() {
-        return message;
+    public OpinionType getType() {
+        return type;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setType(OpinionType type) {
+        this.type = type;
     }
 
     public User getUser() {
