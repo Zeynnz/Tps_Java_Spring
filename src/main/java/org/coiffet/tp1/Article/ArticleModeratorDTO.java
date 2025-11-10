@@ -2,20 +2,30 @@ package org.coiffet.tp1.Article;
 
 import org.coiffet.tp1.Opinion.OpinionType;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ArticleModeratorDTO {
 
     private final String auteur;
     private final String contenu;
+    private final String datePublication;
     private final List<String> usersLiked;
-    private long totalLikes;
     private final List<String> usersDisliked;
-    private long totalDislikes;
+    private final long totalLikes;
+    private final long totalDislikes;
 
     public ArticleModeratorDTO(Article article) {
         this.auteur = article.getAuthor().getName();
         this.contenu = article.getContenu();
+
+        // Date de publication
+        if (article.getDatePublication() != null) {
+            this.datePublication = article.getDatePublication()
+                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        } else {
+            this.datePublication = "Date inconnue";
+        }
 
         // Calcul des likes
         this.usersLiked = article.getOpinions().stream()
@@ -29,6 +39,8 @@ public class ArticleModeratorDTO {
                 .map(o -> o.getUser().getName())
                 .toList();
 
+        this.totalLikes = usersLiked.size();
+        this.totalDislikes = usersDisliked.size();
     }
 
     public String getAuteur() {
@@ -37,6 +49,10 @@ public class ArticleModeratorDTO {
 
     public String getContenu() {
         return contenu;
+    }
+
+    public String getDatePublication() {
+        return datePublication;
     }
 
     public List<String> getUsersLiked() {
