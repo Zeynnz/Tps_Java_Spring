@@ -1,6 +1,8 @@
 package org.coiffet.tp1.Article;
 
+import org.coiffet.tp1.Opinion.Opinion;
 import org.coiffet.tp1.Opinion.OpinionType;
+import org.coiffet.tp1.User.User;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -10,8 +12,8 @@ public class ArticleModeratorDTO {
     private final String auteur;
     private final String contenu;
     private final String datePublication;
-    private final List<String> usersLiked;
-    private final List<String> usersDisliked;
+    private final List<User> usersLiked;
+    private final List<User> usersDisliked;
     private final long totalLikes;
     private final long totalDislikes;
 
@@ -30,13 +32,13 @@ public class ArticleModeratorDTO {
         // Calcul des likes
         this.usersLiked = article.getOpinions().stream()
                 .filter(o -> o.getType() == OpinionType.LIKE)
-                .map(o -> o.getUser().getName())
+                .map(Opinion::getUser)
                 .toList();
 
         // Calcul des dislikes
         this.usersDisliked = article.getOpinions().stream()
                 .filter(o -> o.getType() == OpinionType.DISLIKE)
-                .map(o -> o.getUser().getName())
+                .map(Opinion::getUser)
                 .toList();
 
         this.totalLikes = usersLiked.size();
@@ -55,7 +57,7 @@ public class ArticleModeratorDTO {
         return datePublication;
     }
 
-    public List<String> getUsersLiked() {
+    public List<User> getUsersLiked() {
         return usersLiked;
     }
 
@@ -63,7 +65,7 @@ public class ArticleModeratorDTO {
         return totalLikes;
     }
 
-    public List<String> getUsersDisliked() {
+    public List<User> getUsersDisliked() {
         return usersDisliked;
     }
 

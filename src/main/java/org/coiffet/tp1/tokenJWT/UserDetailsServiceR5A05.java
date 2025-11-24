@@ -16,7 +16,7 @@ public class UserDetailsServiceR5A05 implements UserDetailsService {
 
     static {
         users.put("admin", User.withUsername("admin")
-                .password("admin123") // NoOpPasswordEncoder pour l'instant
+                .password("admin123")
                 .roles("ADMIN")
                 .build());
 
