@@ -1,0 +1,13 @@
+package org.coiffet.tp1.tokenJWT;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UsernameDTO {
+    private String username;
+    private String password;
+}

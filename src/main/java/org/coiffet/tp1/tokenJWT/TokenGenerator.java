@@ -1,35 +1,38 @@
 package org.coiffet.tp1.tokenJWT;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import io.jsonwebtoken.Jwts;
 
 @Component
 public class TokenGenerator {
 
-    @Value("${r5a05.app.jwtSecret}")
-    private String jwtSecret;
+    private final TokenValidator tokenValidator;
 
-    @Value("${r5a05.app.jwtExpirationMs}")
-    private int jwtExpirationMs;
+    public TokenGenerator(TokenValidator tokenValidator) {
+        this.tokenValidator = tokenValidator;
+    }
 
     public String generateJwtToken(Authentication authentication) {
-
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
         Date tokenCreationDate = new Date();
+        long jwtExpirationMs = 1000 * 600;
         Date tokenExpirationDate = new Date(tokenCreationDate.getTime() + jwtExpirationMs);
 
+        SecretKey key = tokenValidator.getKey();
+
         return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
-                .setIssuedAt(tokenCreationDate)
-                .setExpiration(tokenExpirationDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .subject(userPrincipal.getUsername())
+                .issuedAt(tokenCreationDate)
+                .expiration(tokenExpirationDate)
+                .signWith(key)
                 .compact();
     }
 }

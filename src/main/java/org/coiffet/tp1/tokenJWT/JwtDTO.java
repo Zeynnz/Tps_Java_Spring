@@ -12,4 +12,5 @@ public class JwtDTO {
     private final String type = "Bearer";
     private final String username;
     private final List<String> roles;
+
 }
